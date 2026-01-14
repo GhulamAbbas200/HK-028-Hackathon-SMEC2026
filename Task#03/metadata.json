@@ -1,0 +1,7 @@
+{
+  "name": "SmartSpend AI - Receipt & Expense Intelligence",
+  "description": "A high-performance expense tracking application powered by Gemini AI. It scans receipts using multimodal intelligence, extracts key financial data, and provides deep visual analytics for personal financial management.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
