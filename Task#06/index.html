@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CollabStream - Real-Time Workspace</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f1115; /* Deep dark background */
+            color: white;
+            overflow: hidden; /* Prevent scrolling in app-like experience */
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1f2228;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3f444e;
+            border-radius: 4px;
+        }
+
+        /* Glassmorphism utilities */
+        .glass-panel {
+            background: rgba(31, 34, 40, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-button {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .glass-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .active-tool {
+            background-color: #3b82f6; /* Blue-500 */
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        /* Avatar pulse animation for speaking */
+        .speaking-ring {
+            box-shadow: 0 0 0 2px #22c55e;
+        }
+
+        /* Canvas cursor */
+        canvas {
+            cursor: crosshair;
+        }
+    </style>
+</head>
+<body class="h-screen w-screen relative">
+
+    <!-- =======================
+         VIEW 1: LOBBY
+         ======================= -->
+    <section id="view-lobby" class="h-full w-full flex items-center justify-center bg-[url('https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=2029&auto=format&fit=crop')] bg-cover bg-center">
+        <!-- Overlay -->
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+
+        <!-- Card -->
+        <div class="relative glass-panel p-8 rounded-2xl w-full max-w-md shadow-2xl flex flex-col gap-6">
+            <div class="text-center">
+                <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-blue-600 mb-4">
+                    <i class="ph ph-video-camera text-2xl"></i>
+                </div>
+                <h1 class="text-2xl font-bold">Join Meeting</h1>
+                <p class="text-gray-400 text-sm mt-1">CollabStream Project Room</p>
+            </div>
+
+            <!-- Preview Box -->
+            <div class="aspect-video bg-gray-800 rounded-lg flex items-center justify-center relative overflow-hidden group">
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="w-20 h-20 rounded-full bg-purple-600 flex items-center justify-center text-2xl font-bold">
+                        YO
+                    </div>
+                </div>
+                <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-4">
+                    <button class="w-10 h-10 rounded-full bg-gray-900/80 hover:bg-red-500 text-white flex items-center justify-center transition" onclick="toggleBtn(this)">
+                        <i class="ph ph-microphone"></i>
+                    </button>
+                    <button class="w-10 h-10 rounded-full bg-gray-900/80 hover:bg-red-500 text-white flex items-center justify-center transition" onclick="toggleBtn(this)">
+                        <i class="ph ph-video-camera"></i>
+                    </button>
+                </div>
+                <div class="absolute top-3 right-3">
+                     <span class="px-2 py-1 rounded bg-black/50 text-xs font-mono text-green-400">● Mic Check</span>
+                </div>
+            </div>
+
+            <!-- Inputs -->
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs text-gray-400 uppercase font-semibold tracking-wider ml-1">Display Name</label>
+                    <input type="text" value="You" class="w-full mt-1 bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500 transition text-white" placeholder="Enter your name">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 uppercase font-semibold tracking-wider ml-1">Room ID</label>
+                    <div class="flex gap-2">
+                        <input type="text" value="proj-alpha-123" class="w-full mt-1 bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500 transition text-white font-mono text-sm" placeholder="ID">
+                        <button class="mt-1 px-4 rounded-lg bg-gray-700 hover:bg-gray-600 text-gray-300 transition" title="Copy"><i class="ph ph-copy"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="switchView('room')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition shadow-lg shadow-blue-900/20 transform hover:-translate-y-0.5">
+                Join Meeting
+            </button>
+        </div>
+    </section>
+
+    <!-- =======================
+         VIEW 2: MAIN ROOM (Container)
+         ======================= -->
+    <section id="view-room" class="h-full w-full flex flex-col hidden bg-[#0f1115]">
+        
+        <!-- Top Bar -->
+        <header class="h-14 border-b border-gray-800 flex items-center justify-between px-4 bg-[#14161b]">
+            <div class="flex items-center gap-4">
+                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                    <i class="ph ph-waves text-white"></i>
+                </div>
+                <div>
+                    <h2 class="font-semibold text-sm">System Architecture Review</h2>
+                    <span class="text-xs text-gray-400 font-mono">ID: 894-332-110</span>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 text-sm text-gray-400">
+                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                00:14:22
+            </div>
+
+            <div class="flex items-center gap-3">
+                <button class="p-2 hover:bg-gray-800 rounded-lg text-gray-400"><i class="ph ph-gear"></i></button>
+                <button onclick="switchView('lobby')" class="px-4 py-2 bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white rounded-lg text-sm font-medium transition border border-red-900/30">
+                    Leave
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <div class="flex-1 flex overflow-hidden relative">
+            
+            <!-- Left/Center Content -->
+            <main class="flex-1 flex flex-col relative transition-all duration-300" id="main-stage">
+                
+                <!-- MODE A: VIDEO GRID -->
+                <div id="video-mode" class="flex-1 p-4 grid grid-cols-2 gap-4 auto-rows-fr">
+                    <!-- User 1 (You) -->
+                    <div class="bg-gray-800 rounded-xl relative overflow-hidden group border border-gray-700">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <div class="w-24 h-24 rounded-full bg-purple-600 flex items-center justify-center text-3xl font-bold">YO</div>
+                        </div>
+                        <div class="absolute bottom-4 left-4 bg-black/60 px-3 py-1 rounded-md text-sm font-medium backdrop-blur-sm">
+                            You
+                        </div>
+                        <div class="absolute top-4 right-4 text-green-400">
+                            <i class="ph ph-microphone"></i>
+                        </div>
+                    </div>
+
+                    <!-- User 2 -->
+                    <div class="bg-gray-800 rounded-xl relative overflow-hidden border border-blue-500/50 shadow-[0_0_20px_rgba(59,130,246,0.1)]">
+                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1000&auto=format&fit=crop" class="w-full h-full object-cover opacity-80" alt="Sarah">
+                        <div class="absolute bottom-4 left-4 bg-black/60 px-3 py-1 rounded-md text-sm font-medium backdrop-blur-sm">
+                            Sarah Jenkins
+                        </div>
+                        <div class="absolute inset-0 border-2 border-green-500/0 speaking-ring rounded-xl transition-all"></div>
+                    </div>
+                     <!-- User 3 -->
+                     <div class="bg-gray-800 rounded-xl relative overflow-hidden border border-gray-700">
+                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1000&auto=format&fit=crop" class="w-full h-full object-cover opacity-80" alt="Sarah">
+                        <div class="absolute bottom-4 left-4 bg-black/60 px-3 py-1 rounded-md text-sm font-medium backdrop-blur-sm">
+                            David Chen
+                        </div>
+                        <div class="absolute top-4 right-4 text-red-400">
+                            <i class="ph ph-microphone-slash"></i>
+                        </div>
+                    </div>
+                     <!-- User 4 -->
+                     <div class="bg-gray-800 rounded-xl relative overflow-hidden border border-gray-700">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <div class="w-24 h-24 rounded-full bg-indigo-600 flex items-center justify-center text-3xl font-bold">MJ</div>
+                        </div>
+                        <div class="absolute bottom-4 left-4 bg-black/60 px-3 py-1 rounded-md text-sm font-medium backdrop-blur-sm">
+                            Marcus Jones
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODE B: WHITEBOARD (Hidden by default) -->
+                <div id="whiteboard-mode" class="hidden flex-1 flex flex-col h-full bg-[#181a20]">
+                    <!-- Mini Video Strip -->
+                    <div class="h-28 border-b border-gray-800 bg-[#14161b] flex items-center px-4 gap-3 overflow-x-auto">
+                         <div class="w-32 h-20 bg-gray-800 rounded-lg flex-shrink-0 relative overflow-hidden border border-green-500">
+                            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200" class="w-full h-full object-cover">
+                            <span class="absolute bottom-1 left-1 text-[10px] bg-black/50 px-1 rounded text-white">Sarah</span>
+                        </div>
+                        <div class="w-32 h-20 bg-gray-800 rounded-lg flex-shrink-0 relative overflow-hidden">
+                            <div class="w-full h-full flex items-center justify-center bg-indigo-900 text-xs">MJ</div>
+                        </div>
+                        <div class="w-32 h-20 bg-gray-800 rounded-lg flex-shrink-0 relative overflow-hidden">
+                             <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=200" class="w-full h-full object-cover">
+                        </div>
+                         <div class="w-32 h-20 bg-gray-800 rounded-lg flex-shrink-0 relative overflow-hidden">
+                            <div class="w-full h-full flex items-center justify-center bg-purple-900 text-xs">You</div>
+                        </div>
+                    </div>
+
+                    <!-- Canvas Area -->
+                    <div class="flex-1 relative bg-white overflow-hidden cursor-crosshair">
+                        <!-- Dot Grid Background -->
+                        <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#000 1px, transparent 1px); background-size: 20px 20px;"></div>
+                        
+                        <canvas id="whiteboard-canvas" class="w-full h-full block"></canvas>
+
+                        <!-- Floating Toolbar -->
+                        <div class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-gray-900 shadow-2xl rounded-xl border border-gray-700 p-2 flex flex-col gap-3">
+                            <button class="p-3 rounded-lg hover:bg-gray-700 text-gray-400 tooltip" onclick="setTool('select')"><i class="ph ph-cursor"></i></button>
+                            <button class="p-3 rounded-lg hover:bg-gray-700 active-tool tooltip" onclick="setTool('pen')"><i class="ph ph-pencil-simple"></i></button>
+                            <button class="p-3 rounded-lg hover:bg-gray-700 text-gray-400 tooltip" onclick="setTool('eraser')"><i class="ph ph-eraser"></i></button>
+                            <button class="p-3 rounded-lg hover:bg-gray-700 text-gray-400 tooltip" onclick="setTool('text')"><i class="ph ph-text-t"></i></button>
+                            <button class="p-3 rounded-lg hover:bg-gray-700 text-gray-400 tooltip" onclick="setTool('shape')"><i class="ph ph-square"></i></button>
+                            <div class="h-px bg-gray-700 w-full my-1"></div>
+                            <button class="p-3 rounded-lg hover:bg-gray-700 text-red-400 tooltip" onclick="clearBoard()"><i class="ph ph-trash"></i></button>
+                        </div>
+                        
+                        <!-- Color Picker (Mock) -->
+                        <div class="absolute left-20 top-1/2 transform -translate-y-1/2 bg-white shadow-xl rounded-lg p-2 flex flex-col gap-2 border border-gray-200">
+                             <div class="w-6 h-6 rounded-full bg-black border cursor-pointer ring-2 ring-offset-2 ring-blue-500" onclick="setColor('black')"></div>
+                             <div class="w-6 h-6 rounded-full bg-red-500 border cursor-pointer" onclick="setColor('red')"></div>
+                             <div class="w-6 h-6 rounded-full bg-blue-500 border cursor-pointer" onclick="setColor('blue')"></div>
+                             <div class="w-6 h-6 rounded-full bg-green-500 border cursor-pointer" onclick="setColor('green')"></div>
+                        </div>
+
+                        <!-- Sticky Note Mockup on Canvas -->
+                        <div class="absolute top-20 right-40 w-48 h-48 bg-yellow-200 shadow-lg transform -rotate-2 p-4 font-handwriting text-black font-medium">
+                            Architecture Diagram goes here...
+                            Need Redis for session store!
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+
+            <!-- Right Sidebar -->
+            <aside id="sidebar" class="w-80 border-l border-gray-800 bg-[#14161b] flex flex-col transition-all duration-300">
+                <!-- Tabs -->
+                <div class="flex border-b border-gray-800">
+                    <button class="flex-1 py-3 text-sm font-medium border-b-2 border-blue-500 text-blue-400 bg-gray-800/50">Chat</button>
+                    <button class="flex-1 py-3 text-sm font-medium text-gray-400 hover:text-gray-200 hover:bg-gray-800/50">Participants (4)</button>
+                </div>
+
+                <!-- Chat Area -->
+                <div class="flex-1 overflow-y-auto p-4 space-y-4">
+                    <!-- Msg 1 -->
+                    <div class="flex gap-3">
+                        <div class="w-8 h-8 rounded-full bg-gray-700 flex-shrink-0 overflow-hidden">
+                             <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=100" class="w-full h-full object-cover">
+                        </div>
+                        <div>
+                            <div class="flex items-baseline gap-2">
+                                <span class="font-medium text-sm text-gray-300">Sarah</span>
+                                <span class="text-[10px] text-gray-500">10:42 AM</span>
+                            </div>
+                            <p class="text-sm text-gray-400 mt-1">Can we switch to the whiteboard to draw the flow?</p>
+                        </div>
+                    </div>
+                    <!-- Msg 2 -->
+                    <div class="flex gap-3">
+                        <div class="w-8 h-8 rounded-full bg-indigo-600 flex-shrink-0 flex items-center justify-center text-xs font-bold">MJ</div>
+                        <div>
+                            <div class="flex items-baseline gap-2">
+                                <span class="font-medium text-sm text-gray-300">Marcus</span>
+                                <span class="text-[10px] text-gray-500">10:43 AM</span>
+                            </div>
+                            <p class="text-sm text-gray-400 mt-1">Sure, I have the Redis schema ready.</p>
+                        </div>
+                    </div>
+                     <!-- Msg 3 (You) -->
+                     <div class="flex gap-3 flex-row-reverse">
+                        <div class="w-8 h-8 rounded-full bg-purple-600 flex-shrink-0 flex items-center justify-center text-xs font-bold">YO</div>
+                        <div class="text-right">
+                             <div class="flex items-baseline gap-2 justify-end">
+                                <span class="text-[10px] text-gray-500">10:44 AM</span>
+                                <span class="font-medium text-sm text-gray-300">You</span>
+                            </div>
+                            <div class="bg-blue-600/20 text-blue-100 p-2 rounded-lg rounded-tr-none text-sm mt-1 inline-block text-left">
+                                Opening it now.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Input -->
+                <div class="p-4 border-t border-gray-800">
+                    <div class="relative">
+                        <input type="text" placeholder="Type a message..." class="w-full bg-gray-900 border border-gray-700 rounded-full pl-4 pr-10 py-2 text-sm focus:outline-none focus:border-blue-500 text-gray-300">
+                        <button class="absolute right-2 top-1.5 p-1 rounded-full bg-blue-600 text-white hover:bg-blue-500">
+                            <i class="ph ph-paper-plane-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Bottom Controls Bar -->
+        <footer class="h-16 border-t border-gray-800 bg-[#14161b] flex items-center justify-center gap-4 relative z-50">
+            
+            <button class="control-btn glass-button w-12 h-12 rounded-full flex items-center justify-center text-white" onclick="toggleState(this)">
+                <i class="ph ph-microphone text-xl"></i>
+            </button>
+            
+            <button class="control-btn glass-button w-12 h-12 rounded-full flex items-center justify-center text-white" onclick="toggleState(this)">
+                <i class="ph ph-video-camera text-xl"></i>
+            </button>
+
+            <!-- Divider -->
+            <div class="w-px h-8 bg-gray-700 mx-2"></div>
+
+            <button class="control-btn glass-button w-12 h-12 rounded-full flex items-center justify-center text-green-400 hover:bg-green-500/20 hover:border-green-500/50" title="Share Screen">
+                <i class="ph ph-screencast text-xl"></i>
+            </button>
+
+            <button id="wb-toggle" class="control-btn glass-button w-14 h-14 rounded-xl flex items-center justify-center text-blue-400 border-blue-500/30 bg-blue-500/10 hover:bg-blue-500/20" title="Whiteboard Mode" onclick="toggleWhiteboard()">
+                <i class="ph ph-presentation-chart text-2xl"></i>
+            </button>
+
+            <button class="control-btn glass-button w-12 h-12 rounded-full flex items-center justify-center text-white" title="Record">
+                <i class="ph ph-record text-xl text-red-500"></i>
+            </button>
+
+             <!-- Divider -->
+             <div class="w-px h-8 bg-gray-700 mx-2"></div>
+
+            <button class="control-btn glass-button active-tool w-12 h-12 rounded-full flex items-center justify-center text-white" title="Chat" onclick="toggleSidebar()">
+                <i class="ph ph-chat-text text-xl"></i>
+            </button>
+        </footer>
+
+    </section>
+
+    <script>
+        // --- View Switching Logic ---
+        function switchView(viewName) {
+            const lobby = document.getElementById('view-lobby');
+            const room = document.getElementById('view-room');
+
+            if (viewName === 'room') {
+                lobby.classList.add('hidden');
+                room.classList.remove('hidden');
+            } else {
+                lobby.classList.remove('hidden');
+                room.classList.add('hidden');
+            }
+        }
+
+        function toggleBtn(btn) {
+            btn.classList.toggle('bg-red-500');
+            btn.classList.toggle('hover:bg-red-500');
+            btn.classList.toggle('bg-gray-900/80');
+            
+            const icon = btn.querySelector('i');
+            if(icon.classList.contains('ph-microphone')) {
+                icon.classList.toggle('ph-microphone-slash');
+                icon.classList.toggle('ph-microphone');
+            } else if (icon.classList.contains('ph-video-camera')) {
+                icon.classList.toggle('ph-video-camera-slash');
+                icon.classList.toggle('ph-video-camera');
+            }
+        }
+
+        function toggleState(btn) {
+            btn.classList.toggle('bg-red-500/20');
+            btn.classList.toggle('border-red-500');
+            const icon = btn.querySelector('i');
+            if(icon.classList.contains('ph-microphone')) {
+                icon.classList.replace('ph-microphone', 'ph-microphone-slash');
+            } else if (icon.classList.contains('ph-microphone-slash')) {
+                icon.classList.replace('ph-microphone-slash', 'ph-microphone');
+            } else if (icon.classList.contains('ph-video-camera')) {
+                icon.classList.replace('ph-video-camera', 'ph-video-camera-slash');
+            } else if (icon.classList.contains('ph-video-camera-slash')) {
+                icon.classList.replace('ph-video-camera-slash', 'ph-video-camera');
+            }
+        }
+
+        // --- Layout Toggles ---
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar.style.width === '0px' || sidebar.classList.contains('hidden')) {
+                sidebar.classList.remove('hidden');
+                sidebar.style.width = '20rem';
+            } else {
+                sidebar.classList.add('hidden');
+                sidebar.style.width = '0px';
+            }
+        }
+
+        function toggleWhiteboard() {
+            const videoMode = document.getElementById('video-mode');
+            const wbMode = document.getElementById('whiteboard-mode');
+            const btn = document.getElementById('wb-toggle');
+
+            if (wbMode.classList.contains('hidden')) {
+                // Show Whiteboard
+                videoMode.classList.add('hidden');
+                wbMode.classList.remove('hidden');
+                btn.classList.add('bg-blue-500', 'text-white');
+                btn.classList.remove('text-blue-400', 'bg-blue-500/10');
+                
+                // Initialize canvas size
+                resizeCanvas();
+            } else {
+                // Show Video Grid
+                wbMode.classList.add('hidden');
+                videoMode.classList.remove('hidden');
+                btn.classList.remove('bg-blue-500', 'text-white');
+                btn.classList.add('text-blue-400', 'bg-blue-500/10');
+            }
+        }
+
+        // --- Canvas Logic (Basic Drawing) ---
+        const canvas = document.getElementById('whiteboard-canvas');
+        const ctx = canvas.getContext('2d');
+        let painting = false;
+        let color = 'black';
+        let currentTool = 'pen';
+
+        function resizeCanvas() {
+            const parent = canvas.parentElement;
+            canvas.width = parent.clientWidth;
+            canvas.height = parent.clientHeight;
+        }
+        
+        window.addEventListener('resize', resizeCanvas);
+
+        function startPosition(e) {
+            painting = true;
+            draw(e);
+        }
+
+        function finishedPosition() {
+            painting = false;
+            ctx.beginPath();
+        }
+
+        function draw(e) {
+            if (!painting || currentTool === 'select') return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            ctx.lineWidth = currentTool === 'eraser' ? 20 : 3;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = currentTool === 'eraser' ? '#ffffff' : color;
+
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        }
+
+        canvas.addEventListener('mousedown', startPosition);
+        canvas.addEventListener('mouseup', finishedPosition);
+        canvas.addEventListener('mousemove', draw);
+
+        function setTool(tool) {
+            currentTool = tool;
+            // Visual feedback for tools would go here
+            document.querySelectorAll('.tooltip').forEach(el => el.classList.remove('active-tool', 'text-white'));
+            event.currentTarget.classList.add('active-tool', 'text-white');
+            event.currentTarget.classList.remove('text-gray-400');
+        }
+
+        function setColor(c) {
+            color = c;
+            currentTool = 'pen'; // switch back to pen on color click
+        }
+
+        function clearBoard() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+    </script>
+</body>
+</html>
