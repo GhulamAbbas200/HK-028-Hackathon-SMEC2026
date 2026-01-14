@@ -1,20 +1,88 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+📱 Mini Social Media App : https://poso-eight.vercel.app/
+📌 Project Overview
 
-# Run and deploy your AI Studio app
+This project is a mini social media application that allows users to create profiles, share posts, interact through likes and comments, and follow other users.
+The goal is to simulate the core functionality of a real-world social platform in a simple and efficient way.
 
-This contains everything you need to run your app locally.
+🎯 Core Features
+👤 User Profiles
 
-View your app in AI Studio: https://ai.studio/apps/drive/1BJIDCjgR_Ql1A-my5vVJIXeatScbxpqh
+User registration and login
 
-## Run Locally
+Profile with username, bio, and profile picture
 
-**Prerequisites:**  Node.js
+View own and other users’ profiles
 
+📝 Posts & Comments
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+Create, edit, and delete posts
+
+View posts in a feed
+
+Comment on posts
+
+View all comments under a post
+
+❤️ Like System
+
+Like and unlike posts
+
+Real-time like count updates
+
+Prevent multiple likes from the same user
+
+➕ Follow System
+
+Follow and unfollow users
+
+View followers and following lists
+
+Personalized feed based on followed users
+
+🔄 App Workflow
+
+User creates an account or logs in
+
+User sets up their profile
+
+User creates posts and interacts with others
+
+Users can like posts, comment, and follow other users
+
+Feed updates based on user activity
+
+🛠️ Key Functionalities
+
+Authentication and authorization
+
+Data validation
+
+Real-time interaction handling
+
+Responsive and user-friendly UI
+
+🚀 Use Cases
+
+Learning social media app design
+
+Practicing CRUD operations
+
+Understanding user interaction systems
+
+Backend and frontend integration practice
+
+📂 Future Enhancements
+
+Direct messaging
+
+Notifications system
+
+Post sharing
+
+Search users and posts
+
+Media uploads (images/videos)
+
+✅ Conclusion
+
+This Mini Social Media App demonstrates the fundamental concepts behind modern social platforms, focusing on user interaction, content sharing, and engagement. It is ideal for learning and academic purposes.
