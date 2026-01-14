@@ -1,0 +1,5 @@
+{
+  "name": "LyricalCloud",
+  "description": "An advanced music lyric analysis tool that utilizes AI to retrieve lyrics and generates beautiful, interactive D3-powered word clouds to visualize song themes.",
+  "requestFramePermissions": []
+}
