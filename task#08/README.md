@@ -1,20 +1,92 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+Lyrics Scraper & Word Cloud Generator
+📌 Project Overview
 
-# Run and deploy your AI Studio app
+This project is designed to scrape song lyrics from online sources and generate a visual word cloud based on the most frequently used words in the lyrics. The system helps analyze themes, emotions, and commonly used terms in songs in an easy and visual way.
 
-This contains everything you need to run your app locally.
+🎯 Objectives
 
-View your app in AI Studio: https://ai.studio/apps/drive/1k0rv5JqBL0iYaFsDUrHBWcA6zBM9HPAX
+Automatically collect lyrics of songs
 
-## Run Locally
+Clean and process text data
 
-**Prerequisites:**  Node.js
+Analyze word frequency
 
+Generate a word cloud for visual insights
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+🚀 Core Features
+
+Scrape lyrics from supported song websites
+
+Remove stop words, punctuation, and irrelevant text
+
+Count word frequencies
+
+Generate a dynamic word cloud image
+
+Support for single or multiple songs
+
+Simple and user-friendly workflow
+
+🛠️ System Workflow
+
+User provides song name or lyrics source URL
+
+System scrapes lyrics data
+
+Text preprocessing (cleaning & filtering)
+
+Word frequency analysis
+
+Word cloud generation
+
+📊 Output
+
+Cleaned lyrics text
+
+Frequency-based word cloud visualization
+
+Insights into commonly used words
+
+📂 Project Structure (Example)
+lyrics-wordcloud/
+│── scraper/
+│   └── lyrics_scraper.py
+│── processor/
+│   └── text_cleaner.py
+│── visualization/
+│   └── wordcloud_generator.py
+│── data/
+│── output/
+│── README.md
+
+🔍 Use Cases
+
+Music trend analysis
+
+Song theme exploration
+
+NLP and text analysis learning
+
+Data visualization projects
+
+⚠️ Notes
+
+Scraping depends on website availability and structure
+
+Respect copyright and website scraping policies
+
+Intended for educational and research purposes
+
+📈 Future Enhancements
+
+Artist-wise or album-wise analysis
+
+Sentiment analysis of lyrics
+
+Interactive word cloud
+
+Support for multiple languages
+
+✅ Conclusion
+
+This system provides an effective way to analyze song lyrics through automated scraping and visual representation, making music data more meaningful and easier to understand.
