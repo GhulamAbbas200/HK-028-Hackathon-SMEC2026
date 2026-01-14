@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusFlow | Resource Management</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <nav>
+        <div class="logo"><i data-lucide="shield-check"></i> CampusFlow</div>
+        <div class="nav-item active" id="nav-catalog" onclick="showView('catalog')"><i data-lucide="grid"></i> Catalog
+        </div>
+        <div class="nav-item" id="nav-admin" onclick="showView('admin')"><i data-lucide="calendar-check"></i> Admin
+            Dashboard</div>
+    </nav>
+
+    <main>
+        <div id="catalog-view">
+            <div class="header">
+                <div style="display: flex; align-items: center;">
+                    <button class="menu-btn" onclick="toggleSidebar()"><i data-lucide="menu"></i></button>
+                    <h1>Resource Catalog</h1>
+                </div>
+                <div class="search-bar">
+                    <i data-lucide="search" size="18"></i>
+                    <input type="text" id="searchInput" placeholder="Search labs, halls, equipment..."
+                        onkeyup="filterResources()">
+                </div>
+            </div>
+            <div class="grid" id="resourceGrid"></div>
+        </div>
+
+        <div id="admin-view" class="hidden">
+            <div class="header">
+                <h1>Pending Approval Queue</h1>
+            </div>
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Resource</th>
+                        <th>Requester</th>
+                        <th>Date & Slot</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="adminTableBody"></tbody>
+            </table>
+        </div>
+    </main>
+
+    <div id="bookingModal">
+        <div class="modal-content">
+            <h2 id="modalTitle" style="margin-bottom: 5px;">Book Resource</h2>
+            <p style="color: #64748b; margin-bottom: 20px;">Check availability.</p>
+
+            <div class="calendar-container">
+                <div class="calendar-header">
+                    <button class="btn" style="width: auto; padding: 4px 8px;" onclick="changeMonth(-1)"><i
+                            data-lucide="chevron-left"></i></button>
+                    <span id="currentMonthYear" style="font-weight: 600;"></span>
+                    <button class="btn" style="width: auto; padding: 4px 8px;" onclick="changeMonth(1)"><i
+                            data-lucide="chevron-right"></i></button>
+                </div>
+                <div class="calendar-grid" id="calendarGrid"></div>
+            </div>
+
+            <label>Available Slots</label>
+            <div id="timeSlots" class="time-slots"></div>
+
+            <div style="display: flex; gap: 12px; margin-top: 10px;">
+                <button class="btn btn-primary" onclick="confirmBooking()">Check & Request</button>
+                <button class="btn" style="background: #f1f5f9; color: #475569;" onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 2000;"></div>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

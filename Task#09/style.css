@@ -1,0 +1,404 @@
+:root {
+    --primary: #2563eb;
+    --primary-dark: #1e40af;
+    --bg-light: #f8fafc;
+    --sidebar: #1e293b;
+    --text-main: #334155;
+    --white: #ffffff;
+    --border: #e2e8f0;
+    --success: #22c55e;
+    --danger: #ef4444;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', system-ui, sans-serif;
+}
+
+body {
+    background-color: var(--bg-light);
+    color: var(--text-main);
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar */
+nav {
+    width: 260px;
+    background: var(--sidebar);
+    color: white;
+    padding: 2rem 1rem;
+    position: fixed;
+    height: 100vh;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 2rem;
+    color: #60a5fa;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav-item {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nav-item:hover,
+.nav-item.active {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Main Content */
+main {
+    flex: 1;
+    margin-left: 260px;
+    padding: 2rem;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+/* Catalog UI */
+.search-bar {
+    background: white;
+    border: 1px solid var(--border);
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    width: 350px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.search-bar input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 0.9rem;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    transition: 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.tag {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 700;
+    color: #64748b;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+/* Buttons */
+.btn {
+    padding: 0.7rem 1.2rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s;
+    width: 100%;
+    font-size: 0.9rem;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* Modal Enhancements */
+.modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    width: 500px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Calendar Styles */
+.calendar-container {
+    margin-bottom: 20px;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    text-align: center;
+}
+
+.calendar-day {
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: 0.2s;
+}
+
+.calendar-day:hover:not(.disabled) {
+    background-color: var(--bg-light);
+}
+
+.calendar-day.selected {
+    background-color: var(--primary);
+    color: white;
+}
+
+.calendar-day.today {
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    font-weight: bold;
+}
+
+.calendar-day.disabled {
+    color: #cbd5e1;
+    cursor: not-allowed;
+}
+
+.weekday-header {
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-bottom: 5px;
+}
+
+/* Time Slot Chips */
+.time-slots {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.time-chip {
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: 0.2s;
+    background: white;
+}
+
+.time-chip.selected {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.time-chip.booked {
+    background: var(--bg-light);
+    color: #94a3b8;
+    cursor: not-allowed;
+    text-decoration: line-through;
+    border-color: var(--border);
+}
+
+/* Toast Notifications */
+.toast {
+    background: white;
+    border-left: 4px solid var(--primary);
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 300px;
+    animation: slideIn 0.3s ease-out;
+    transition: all 0.3s ease;
+    justify-content: space-between;
+}
+
+.toast-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.toast-close {
+    background: none;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toast-close:hover {
+    background: #f1f5f9;
+    color: var(--danger);
+}
+
+.toast.success {
+    border-left-color: var(--success);
+}
+
+.toast.error {
+    border-left-color: var(--danger);
+}
+
+.toast.info {
+    border-left-color: var(--primary);
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Admin Dashboard */
+.admin-table {
+    width: 100%;
+    background: white;
+    border-collapse: collapse;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+
+.admin-table th {
+    background: #f8fafc;
+    padding: 1rem;
+    text-align: left;
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.admin-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+/* Mobile Responsive */
+.menu-btn {
+    display: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: var(--text-main);
+}
+
+@media (max-width: 768px) {
+    nav {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+        z-index: 999;
+    }
+
+    nav.open {
+        transform: translateX(0);
+    }
+
+    main {
+        margin-left: 0;
+        padding: 1rem;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .search-bar {
+        width: 100%;
+    }
+
+    .menu-btn {
+        display: block;
+        margin-right: 15px;
+    }
+
+    /* Modal Mobile */
+    .modal-content {
+        width: 90%;
+        padding: 1.5rem;
+    }
+
+    .calendar-day {
+        padding: 6px;
+        font-size: 0.8rem;
+    }
+}
