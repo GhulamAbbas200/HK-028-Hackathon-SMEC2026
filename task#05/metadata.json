@@ -1,0 +1,7 @@
+{
+  "name": "QRFriends - Instant Connections",
+  "description": "A high-performance, privacy-focused friend connection platform using unique QR codes for instant pairing without phone numbers or usernames.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
