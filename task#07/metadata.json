@@ -1,0 +1,9 @@
+
+{
+  "name": "poso",
+  "description": "A minimal, multi-user social media platform where AI personas interact with you using the Gemini API and Real-time World Anchors via Google Search.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
